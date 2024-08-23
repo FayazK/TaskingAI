@@ -1,14 +1,14 @@
-version: "3.3"
-
 services:
   frontend:
-    image: taskingai/taskingai-console:v0.3.0
+    build:
+      context: ../frontend
     depends_on:
       - backend-web
       - backend-api
 
   backend-inference:
-    image: taskingai/taskingai-inference:v0.2.14
+    build:
+      context: ../inference
     environment:
       AES_ENCRYPTION_KEY: ${AES_ENCRYPTION_KEY}
       ICON_URL_PREFIX: ${HOST_URL}
@@ -20,7 +20,8 @@ services:
       retries: 5
 
   backend-plugin:
-    image: taskingai/taskingai-plugin:v0.2.10
+    build:
+      context: ../plugin
     environment:
       AES_ENCRYPTION_KEY: ${AES_ENCRYPTION_KEY}
       ICON_URL_PREFIX: ${HOST_URL}
@@ -42,7 +43,8 @@ services:
       retries: 5
 
   backend-api:
-    image: taskingai/taskingai-server:v0.3.0
+    build:
+      context: ../backend
     environment:
       POSTGRES_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       REDIS_URL: redis://:${REDIS_PASSWORD}@cache:6379/${REDIS_DB}
@@ -72,7 +74,8 @@ services:
       retries: 5
 
   backend-web:
-    image: taskingai/taskingai-server:v0.3.0
+    build:
+      context: ../backend
     environment:
       POSTGRES_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       REDIS_URL: redis://:${REDIS_PASSWORD}@cache:6379/${REDIS_DB}
@@ -136,7 +139,6 @@ services:
     image: nginx:1.24
     ports:
       - "8080:80"
-      # edit this to change the port, for example to "8080:80" to use port 8080
     volumes:
       - ./nginx/conf:/etc/nginx/conf.d
       - ./data/nginx_cache:/var/cache/nginx
